@@ -1,0 +1,37 @@
+﻿  gl_utils.cpp
+c:\users\giselamd\downloads\src\utils\gl_utils.cpp(12): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\stdio.h(207): note: consulte a declaração de 'fopen'
+  maths_funcs.cpp
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(139): warning C4244: 'return': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(258): warning C4244: 'return': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(262): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(442): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(444): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(445): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(446): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(447): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(454): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(456): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(457): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(458): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(459): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(466): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(468): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(469): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(470): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(471): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(514): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(515): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(580): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(581): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(582): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(583): warning C4244: '=': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(588): warning C4244: 'argumento': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(613): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(640): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(650): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(651): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+c:\users\giselamd\downloads\src\utils\maths_funcs.cpp(652): warning C4244: 'inicializando': conversão de 'double' para 'float', possível perda de dados
+  00_hellotriangle.cpp
+  Gerando Código...
+  01_hellotriangle.vcxproj -> C:\Users\giselamd\Downloads\src\Debug\hellotriangle.exe
