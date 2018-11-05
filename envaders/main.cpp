@@ -23,39 +23,50 @@ GLFWwindow *g_window = NULL;
 int main() {
 	restart_gl_log();
 	// all the GLFW and GLEW start-up code is moved to here in gl_utils.cpp
-	start_gl("Space Invaders");
+	start_gl("Space Invaders - Gisela e Karolina");
 	// tell GL to only draw onto a pixel if the shape is closer to the viewer
 	//glEnable( GL_DEPTH_TEST ); // enable depth-testing
 	//glDepthFunc( GL_LESS );		 // depth-testing interprets a smaller value as "closer"
 
 
-
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
-	float vertices[] = {
+	float spaceshuttleVertices[] = {
 		// positions          // colors           // texture coords
-		0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
 		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
 		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
 	};
-	unsigned int indices[] = {
+	unsigned int spacehuttleIndices[] = {
+		0, 1, 3, // first triangle
+		1, 2, 3  // second triangle
+	};
+	float enemyVertices[] = {
+		// positions          // colors           // texture coords
+		-0.2f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		-0.2f,  0.3f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		-0.4f,  0.3f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+		-0.4f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+	};
+	unsigned int enemyIndices[] = {
 		0, 1, 3, // first triangle
 		1, 2, 3  // second triangle
 	};
 
-	unsigned int VBO, VAO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	unsigned int VBOs[2], VAOs[2], EBOs[2];
+	glGenVertexArrays(2, VAOs);
+	glGenBuffers(2, VBOs);
+	glGenBuffers(2, EBOs);
 
-	glBindVertexArray(VAO);
+	//Spaceshuttle
+	// ---------
+	glBindVertexArray(VAOs[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(spaceshuttleVertices), spaceshuttleVertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[0]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(spacehuttleIndices), spacehuttleIndices, GL_STATIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -66,6 +77,26 @@ int main() {
 	// texture coord attribute
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+
+	//Enemy
+	// ---------
+	glBindVertexArray(VAOs[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(enemyVertices), enemyVertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[1]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(enemyIndices), enemyIndices, GL_STATIC_DRAW);
+
+	// position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	// color attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	// texture coord attribute
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
 
 	char vertex_shader[1024 * 256];
 	char fragment_shader[1024 * 256];
@@ -112,11 +143,11 @@ int main() {
 		return false;
 	}
 
-	// load and create a texture
+	// load and create a texture SHUTTERSPACE
 	// -------------------------
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	unsigned int texture_spaceshuttle;
+	glGenTextures(1, &texture_spaceshuttle);
+	glBindTexture(GL_TEXTURE_2D, texture_spaceshuttle);
 	// set the texture wrapping parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -129,6 +160,32 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 	// load image, create texture and generate mipmaps
 	unsigned char *data = stbi_load("spaceshuttle.png", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	stbi_image_free(data);
+
+	// load and create a texture ENEMY
+	// -------------------------
+	unsigned int texture_enemy;
+	glGenTextures(1, &texture_enemy);
+	glBindTexture(GL_TEXTURE_2D, texture_enemy);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//stbi_set_flip_vertically_on_load(true);
+	// load image, create texture and generate mipmaps
+	data = stbi_load("enemy.png", &width, &height, &nrChannels, 0);
 	if (data)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -153,18 +210,20 @@ int main() {
 
 		glViewport(0, 0, g_gl_width, g_gl_height);
 
-		// bind Texture
-		glBindTexture(GL_TEXTURE_2D, texture);
-
-		//
-		// Note: this call is not necessary, but I like to do it anyway before any
-		// time that I call glDrawArrays() so I never use the wrong shader programme
+		//SpaceShuttle
+		glActiveTexture(texture_spaceshuttle);
+		glBindTexture(GL_TEXTURE_2D, texture_spaceshuttle);
 		glUseProgram( shader_programme );
-
-		// Note: this call is not necessary, but I like to do it anyway before any
-		// time that I call glDrawArrays() so I never use the wrong vertex data
-		glBindVertexArray( VAO );
+		glBindVertexArray( VAOs[0]);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
+		//Enemy
+		glActiveTexture(texture_enemy);
+		glBindTexture(GL_TEXTURE_2D, texture_enemy);
+		glUseProgram(shader_programme);
+		glBindVertexArray(VAOs[1]);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 		// update other events like input handling
 		glfwPollEvents();
 		if ( GLFW_PRESS == glfwGetKey( g_window, GLFW_KEY_ESCAPE ) ) {
