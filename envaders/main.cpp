@@ -14,11 +14,30 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-
 int g_gl_width = 640;
 int g_gl_height = 480;
+int vertexPosLocation;
+float dx = 0, dy = 0;
 GLFWwindow *g_window = NULL;
 
+// if a key is pressed / released via GLFW
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+	static bool gWireframe = 0;
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GL_TRUE);
+
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+		printf("LEFT");
+		dx -= 0.1;
+	}
+	
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+		printf("Right");
+		dx += 0.1;
+	}
+
+	glUniform3f(vertexPosLocation, dx, dy, 0.0f);
+}
 
 int main() {
 	restart_gl_log();
@@ -99,8 +118,10 @@ int main() {
 
 
 	char vertex_shader[1024 * 256];
+	char vertex_shader_enemy[1024 * 256];
 	char fragment_shader[1024 * 256];
 	parse_file_into_str( "test_vs.glsl", vertex_shader, 1024 * 256 );
+	parse_file_into_str( "vs_enemy.glsl", vertex_shader_enemy, 1024 * 256);
 	parse_file_into_str( "test_fs.glsl", fragment_shader, 1024 * 256 );
 
 	GLuint vs = glCreateShader( GL_VERTEX_SHADER );
@@ -130,6 +151,7 @@ int main() {
 		return 1; // or exit or something
 	}
 
+	//programme with shaders for Spaceshuttle
 	GLuint shader_programme = glCreateProgram();
 	glAttachShader( shader_programme, fs );
 	glAttachShader( shader_programme, vs );
@@ -141,6 +163,33 @@ int main() {
 						 shader_programme );
 		print_programme_info_log( shader_programme );
 		return false;
+	}
+
+	//create enemy vertex shader
+	GLuint vs2 = glCreateShader(GL_VERTEX_SHADER);
+	p = (const GLchar *)vertex_shader_enemy;
+	glShaderSource(vs2, 1, &p, NULL);
+	glCompileShader(vs2);
+
+	// check for compile errors
+	glGetShaderiv(vs2, GL_COMPILE_STATUS, &params);
+	if (GL_TRUE != params) {
+		fprintf(stderr, "ERROR: GL shader index %i did not compile\n", vs2);
+		print_shader_info_log(vs2);
+		return 1; // or exit or something
+	}
+
+	//programme with shaders for enemy
+	GLuint shader_programme_enemy = glCreateProgram();
+	glAttachShader(shader_programme_enemy, fs);
+	glAttachShader(shader_programme_enemy, vs2);
+	glLinkProgram(shader_programme_enemy);
+
+	glGetProgramiv(shader_programme_enemy, GL_LINK_STATUS, &params);
+	if (GL_TRUE != params) {
+		fprintf(stderr, "ERROR: could not link shader programme GL index %i\n",
+			shader_programme_enemy);
+		return 0;
 	}
 
 	// load and create a texture SHUTTERSPACE
@@ -202,6 +251,10 @@ int main() {
 	glFrontFace( GL_CW );			// GL_CCW for counter clock-wise
 
 
+	// Set the required callback functions
+	glfwSetKeyCallback(g_window, key_callback);
+
+
 	while ( !glfwWindowShouldClose( g_window ) ) {
 
 		// wipe the drawing surface clear
@@ -210,18 +263,21 @@ int main() {
 
 		glViewport(0, 0, g_gl_width, g_gl_height);
 
+		//Enemy
+		glActiveTexture(texture_enemy);
+		glBindTexture(GL_TEXTURE_2D, texture_enemy);
+		glUseProgram(shader_programme_enemy);
+		glBindVertexArray(VAOs[1]);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
+
 		//SpaceShuttle
 		glActiveTexture(texture_spaceshuttle);
 		glBindTexture(GL_TEXTURE_2D, texture_spaceshuttle);
 		glUseProgram( shader_programme );
+		//get sumPos position
+		vertexPosLocation = glGetUniformLocation(shader_programme, "sumPos");
 		glBindVertexArray( VAOs[0]);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		
-		//Enemy
-		glActiveTexture(texture_enemy);
-		glBindTexture(GL_TEXTURE_2D, texture_enemy);
-		glUseProgram(shader_programme);
-		glBindVertexArray(VAOs[1]);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		// update other events like input handling

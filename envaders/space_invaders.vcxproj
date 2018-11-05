@@ -31,12 +31,13 @@
   <ItemGroup>
     <None Include="test_fs.glsl" />
     <None Include="test_vs.glsl" />
+    <None Include="vs_enemy.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BA1DF00E-A6DD-4E51-B310-067A455277DF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>My01_hellotriangle</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
