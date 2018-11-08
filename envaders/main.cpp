@@ -26,12 +26,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_LEFT || key== GLFW_KEY_A && action == GLFW_PRESS) {
 		printf("LEFT");
 		dx -= 0.1;
 	}
-	
-	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+
+	if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D && action == GLFW_PRESS) {
 		printf("Right");
 		dx += 0.1;
 	}
@@ -52,8 +52,8 @@ int main() {
 	// ------------------------------------------------------------------
 	float spaceshuttleVertices[] = {
 		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
 		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
 		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
 	};
@@ -120,48 +120,48 @@ int main() {
 	char vertex_shader[1024 * 256];
 	char vertex_shader_enemy[1024 * 256];
 	char fragment_shader[1024 * 256];
-	parse_file_into_str( "test_vs.glsl", vertex_shader, 1024 * 256 );
-	parse_file_into_str( "vs_enemy.glsl", vertex_shader_enemy, 1024 * 256);
-	parse_file_into_str( "test_fs.glsl", fragment_shader, 1024 * 256 );
+	parse_file_into_str("test_vs.glsl", vertex_shader, 1024 * 256);
+	parse_file_into_str("vs_enemy.glsl", vertex_shader_enemy, 1024 * 256);
+	parse_file_into_str("test_fs.glsl", fragment_shader, 1024 * 256);
 
-	GLuint vs = glCreateShader( GL_VERTEX_SHADER );
+	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
 	const GLchar *p = (const GLchar *)vertex_shader;
-	glShaderSource( vs, 1, &p, NULL );
-	glCompileShader( vs );
+	glShaderSource(vs, 1, &p, NULL);
+	glCompileShader(vs);
 
 	// check for compile errors
 	int params = -1;
-	glGetShaderiv( vs, GL_COMPILE_STATUS, &params );
-	if ( GL_TRUE != params ) {
-		fprintf( stderr, "ERROR: GL shader index %i did not compile\n", vs );
-		print_shader_info_log( vs );
+	glGetShaderiv(vs, GL_COMPILE_STATUS, &params);
+	if (GL_TRUE != params) {
+		fprintf(stderr, "ERROR: GL shader index %i did not compile\n", vs);
+		print_shader_info_log(vs);
 		return 1; // or exit or something
 	}
 
-	GLuint fs = glCreateShader( GL_FRAGMENT_SHADER );
+	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
 	p = (const GLchar *)fragment_shader;
-	glShaderSource( fs, 1, &p, NULL );
-	glCompileShader( fs );
+	glShaderSource(fs, 1, &p, NULL);
+	glCompileShader(fs);
 
 	// check for compile errors
-	glGetShaderiv( fs, GL_COMPILE_STATUS, &params );
-	if ( GL_TRUE != params ) {
-		fprintf( stderr, "ERROR: GL shader index %i did not compile\n", fs );
-		print_shader_info_log( fs );
+	glGetShaderiv(fs, GL_COMPILE_STATUS, &params);
+	if (GL_TRUE != params) {
+		fprintf(stderr, "ERROR: GL shader index %i did not compile\n", fs);
+		print_shader_info_log(fs);
 		return 1; // or exit or something
 	}
 
 	//programme with shaders for Spaceshuttle
 	GLuint shader_programme = glCreateProgram();
-	glAttachShader( shader_programme, fs );
-	glAttachShader( shader_programme, vs );
-	glLinkProgram( shader_programme );
+	glAttachShader(shader_programme, fs);
+	glAttachShader(shader_programme, vs);
+	glLinkProgram(shader_programme);
 
-	glGetProgramiv( shader_programme, GL_LINK_STATUS, &params );
-	if ( GL_TRUE != params ) {
-		fprintf( stderr, "ERROR: could not link shader programme GL index %i\n",
-						 shader_programme );
-		print_programme_info_log( shader_programme );
+	glGetProgramiv(shader_programme, GL_LINK_STATUS, &params);
+	if (GL_TRUE != params) {
+		fprintf(stderr, "ERROR: could not link shader programme GL index %i\n",
+			shader_programme);
+		print_programme_info_log(shader_programme);
 		return false;
 	}
 
@@ -246,20 +246,20 @@ int main() {
 	}
 	stbi_image_free(data);
 
-	glEnable( GL_CULL_FACE ); // cull face
-	glCullFace( GL_BACK );		// cull back face
-	glFrontFace( GL_CW );			// GL_CCW for counter clock-wise
+	glEnable(GL_CULL_FACE); // cull face
+	glCullFace(GL_BACK);		// cull back face
+	glFrontFace(GL_CW);			// GL_CCW for counter clock-wise
 
 
-	// Set the required callback functions
+								// Set the required callback functions
 	glfwSetKeyCallback(g_window, key_callback);
 
 
-	while ( !glfwWindowShouldClose( g_window ) ) {
+	while (!glfwWindowShouldClose(g_window)) {
 
 		// wipe the drawing surface clear
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glViewport(0, 0, g_gl_width, g_gl_height);
 
@@ -269,24 +269,24 @@ int main() {
 		glUseProgram(shader_programme_enemy);
 		glBindVertexArray(VAOs[1]);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		
+
 
 		//SpaceShuttle
 		glActiveTexture(texture_spaceshuttle);
 		glBindTexture(GL_TEXTURE_2D, texture_spaceshuttle);
-		glUseProgram( shader_programme );
+		glUseProgram(shader_programme);
 		//get sumPos position
 		vertexPosLocation = glGetUniformLocation(shader_programme, "sumPos");
-		glBindVertexArray( VAOs[0]);
+		glBindVertexArray(VAOs[0]);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		// update other events like input handling
 		glfwPollEvents();
-		if ( GLFW_PRESS == glfwGetKey( g_window, GLFW_KEY_ESCAPE ) ) {
-			glfwSetWindowShouldClose( g_window, 1 );
+		if (GLFW_PRESS == glfwGetKey(g_window, GLFW_KEY_ESCAPE)) {
+			glfwSetWindowShouldClose(g_window, 1);
 		}
 		// put the stuff we've been drawing onto the display
-		glfwSwapBuffers( g_window );
+		glfwSwapBuffers(g_window);
 	}
 
 	// close GL context and any other GLFW resources
