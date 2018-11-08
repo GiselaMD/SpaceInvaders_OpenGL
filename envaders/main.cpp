@@ -13,6 +13,9 @@
 #include "gl_utils.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 int g_gl_width = 640;
 int g_gl_height = 480;
@@ -52,10 +55,10 @@ int main() {
 	// ------------------------------------------------------------------
 	float spaceshuttleVertices[] = {
 		// positions          // colors           // texture coords
-		0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+		0.3f,  0.3f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		0.3f, -0.3f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		-0.3f, -0.3f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+		-0.3f,  0.3f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
 	};
 	unsigned int spacehuttleIndices[] = {
 		0, 1, 3, // first triangle
@@ -63,10 +66,10 @@ int main() {
 	};
 	float enemyVertices[] = {
 		// positions          // colors           // texture coords
-		-0.2f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		-0.2f,  0.3f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-		-0.4f,  0.3f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-		-0.4f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+		-0.8f,  0.9f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		-0.8f,  0.8f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		-0.9f,  0.8f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+		-0.9f,  0.9f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
 	};
 	unsigned int enemyIndices[] = {
 		0, 1, 3, // first triangle
@@ -257,6 +260,11 @@ int main() {
 
 	while (!glfwWindowShouldClose(g_window)) {
 
+		// update other events like input handling
+		glfwPollEvents();
+		if (GLFW_PRESS == glfwGetKey(g_window, GLFW_KEY_ESCAPE)) {
+			glfwSetWindowShouldClose(g_window, 1);
+		}
 		// wipe the drawing surface clear
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -268,8 +276,25 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture_enemy);
 		glUseProgram(shader_programme_enemy);
 		glBindVertexArray(VAOs[1]);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+		//clone enemies
+		//PRIMEIRA LINHA
+		for (int i = 0; i <= 7; i++)
+		{
+			glm::mat4 trans;
+			trans = glm::translate(trans, glm::vec3((0.1f + ((float) i)/5), 0.0f, 0.0f));
+			unsigned int transformLoc = glGetUniformLocation(shader_programme_enemy, "transform");
+			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
+		//SEGUNDA LINHA
+		for (int i = 0; i <= 7; i++)
+		{
+			glm::mat4 trans;
+			trans = glm::translate(trans, glm::vec3((0.1f + ((float)i) / 5), -0.2f, 0.0f));
+			unsigned int transformLoc = glGetUniformLocation(shader_programme_enemy, "transform");
+			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
 
 		//SpaceShuttle
 		glActiveTexture(texture_spaceshuttle);
@@ -280,11 +305,7 @@ int main() {
 		glBindVertexArray(VAOs[0]);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		// update other events like input handling
-		glfwPollEvents();
-		if (GLFW_PRESS == glfwGetKey(g_window, GLFW_KEY_ESCAPE)) {
-			glfwSetWindowShouldClose(g_window, 1);
-		}
+		
 		// put the stuff we've been drawing onto the display
 		glfwSwapBuffers(g_window);
 	}
