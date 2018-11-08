@@ -55,10 +55,10 @@ int main() {
 	// ------------------------------------------------------------------
 	float spaceshuttleVertices[] = {
 		// positions          // colors           // texture coords
-		0.3f,  0.3f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		0.3f, -0.3f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-		-0.3f, -0.3f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-		-0.3f,  0.3f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+		 0.1f, -0.75f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		 0.1f, -0.9f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		-0.1f, -0.9f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+		-0.1f, -0.75f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
 	};
 	unsigned int spacehuttleIndices[] = {
 		0, 1, 3, // first triangle
@@ -276,26 +276,34 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture_enemy);
 		glUseProgram(shader_programme_enemy);
 		glBindVertexArray(VAOs[1]);
+		//initializing arrays of positions
+		float x_min[16] = {};
+		float x_max[16] = {};
+		float y_min[16] = {};
+		float y_max[16] = {};
 		//clone enemies
-		//PRIMEIRA LINHA
-		for (int i = 0; i <= 7; i++)
+		
+		for (int i = 0; i <= 15; i++)
 		{
 			glm::mat4 trans;
-			trans = glm::translate(trans, glm::vec3((0.1f + ((float) i)/5), 0.0f, 0.0f));
+			if (i <= 7) {//PRIMEIRA LINHA
+				trans = glm::translate(trans, glm::vec3((0.1f + ((float)i) / 5), 0.0f, 0.0f));
+				x_min[i] = (-0.9f + (0.1f + ((float)i) / 5));
+				x_max[i] = (-0.8f + (0.1f + ((float)i) / 5));
+				y_min[i] = 0.8f;
+				y_max[i] = 0.9f;
+			}
+			if (i > 7) {//SEGUNDA LINHA
+				trans = glm::translate(trans, glm::vec3((-1.5f + ((float)i) / 5), -0.2f, 0.0f));
+				x_min[i] = (-0.9f + (-1.5f + ((float)i) / 5));
+				x_max[i] = (-0.8f + (-1.5f + ((float)i) / 5));
+				y_min[i] = 0.6f;
+				y_max[i] = 0.7f;
+			}
 			unsigned int transformLoc = glGetUniformLocation(shader_programme_enemy, "transform");
 			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}
-		//SEGUNDA LINHA
-		for (int i = 0; i <= 7; i++)
-		{
-			glm::mat4 trans;
-			trans = glm::translate(trans, glm::vec3((0.1f + ((float)i) / 5), -0.2f, 0.0f));
-			unsigned int transformLoc = glGetUniformLocation(shader_programme_enemy, "transform");
-			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		}
-
 		//SpaceShuttle
 		glActiveTexture(texture_spaceshuttle);
 		glBindTexture(GL_TEXTURE_2D, texture_spaceshuttle);
