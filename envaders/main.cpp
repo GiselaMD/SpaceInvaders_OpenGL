@@ -29,14 +29,18 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	if (key == GLFW_KEY_LEFT || key== GLFW_KEY_A && action == GLFW_PRESS) {
-		printf("LEFT");
-		dx -= 0.1;
+	if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A && action == GLFW_PRESS) {
+		if (dx > -0.9){
+			printf("LEFT");
+			dx -= 0.1;
+		}
 	}
 
 	if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D && action == GLFW_PRESS) {
-		printf("Right");
-		dx += 0.1;
+		if (dx < 0.9) {
+			printf("Right");
+			dx += 0.1;
+		}
 	}
 
 	glUniform3f(vertexPosLocation, dx, dy, 0.0f);
