@@ -287,7 +287,7 @@ int main() {
 		float y_max[16] = {};
 		//clone enemies
 		
-		for (int i = 0; i <= 15; i++)
+		for (int i = 0; i <= 16; i++)
 		{
 			glm::mat4 trans;
 			if (i <= 7) {//PRIMEIRA LINHA
@@ -298,7 +298,7 @@ int main() {
 				y_max[i] = 0.9f;
 			}
 			if (i > 7) {//SEGUNDA LINHA
-				trans = glm::translate(trans, glm::vec3((-1.5f + ((float)i) / 5), -0.2f, 0.0f));
+				trans = glm::translate(trans, glm::vec3((-1.6f + ((float)i) / 5), -0.2f, 0.0f));
 				x_min[i] = (-0.9f + (-1.5f + ((float)i) / 5));
 				x_max[i] = (-0.8f + (-1.5f + ((float)i) / 5));
 				y_min[i] = 0.6f;
