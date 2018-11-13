@@ -20,6 +20,7 @@
 int g_gl_width = 640;
 int g_gl_height = 480;
 int vertexPosLocation;
+int vertexPosLocation2;
 float dx = 0, dy = 0;
 GLFWwindow *g_window = NULL;
 
@@ -30,7 +31,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
 	if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A && action == GLFW_PRESS) {
-		if (dx > -0.9){
+		if (dx > -0.9) {
 			printf("LEFT");
 			dx -= 0.1;
 		}
@@ -42,6 +43,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			dx += 0.1;
 		}
 	}
+
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+		printf("Space");
+		
+	}
+
+	glUniform3f(vertexPosLocation2, dx, dy, 0.0f);
 
 	glUniform3f(vertexPosLocation, dx, dy, 0.0f);
 }
@@ -59,15 +67,17 @@ int main() {
 	// ------------------------------------------------------------------
 	float spaceshuttleVertices[] = {
 		// positions          // colors           // texture coords
-		 0.1f, -0.75f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		 0.1f, -0.9f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		0.1f, -0.75f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		0.1f, -0.9f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
 		-0.1f, -0.9f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
 		-0.1f, -0.75f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
 	};
+
 	unsigned int spacehuttleIndices[] = {
 		0, 1, 3, // first triangle
 		1, 2, 3  // second triangle
 	};
+
 	float enemyVertices[] = {
 		// positions          // colors           // texture coords
 		-0.8f,  0.9f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
@@ -75,15 +85,24 @@ int main() {
 		-0.9f,  0.8f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
 		-0.9f,  0.9f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
 	};
+
 	unsigned int enemyIndices[] = {
 		0, 1, 3, // first triangle
 		1, 2, 3  // second triangle
 	};
 
-	unsigned int VBOs[2], VAOs[2], EBOs[2];
-	glGenVertexArrays(2, VAOs);
-	glGenBuffers(2, VBOs);
-	glGenBuffers(2, EBOs);
+	float bulletVertices[] = {
+		0.0, -0.7f, 0.0f
+	};
+
+	unsigned int bulletIndices[] = {
+		0
+	};
+
+	unsigned int VBOs[3], VAOs[3], EBOs[3];
+	glGenVertexArrays(3, VAOs);
+	glGenBuffers(3, VBOs);
+	glGenBuffers(3, EBOs);
 
 	//Spaceshuttle
 	// ---------
@@ -123,13 +142,82 @@ int main() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
+	//---------Bullet test
 
-	char vertex_shader[1024 * 256];
-	char vertex_shader_enemy[1024 * 256];
-	char fragment_shader[1024 * 256];
-	parse_file_into_str("test_vs.glsl", vertex_shader, 1024 * 256);
-	parse_file_into_str("vs_enemy.glsl", vertex_shader_enemy, 1024 * 256);
-	parse_file_into_str("test_fs.glsl", fragment_shader, 1024 * 256);
+	//Bullet
+	// ---------
+	glBindVertexArray(VAOs[2]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(bulletVertices), bulletVertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[2]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(bulletIndices), bulletIndices, GL_STATIC_DRAW);
+
+	// position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glEnableVertexAttribArray(0);
+
+	char vertexShader[1024];
+	char fragmentShader[1024];
+	parse_file_into_str("vs.glsl", vertexShader, 1024);
+	parse_file_into_str("fs.glsl", fragmentShader, 1024);
+
+	GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
+	const GLchar *pe = (const GLchar *)vertexShader;
+	glShaderSource(vShader, 1, &pe, NULL);
+	glCompileShader(vShader);
+
+
+	GLint result;
+	GLchar infoLog[512];
+	glGetShaderiv(vShader, GL_COMPILE_STATUS, &result);
+	if (!result)
+	{
+		glGetShaderInfoLog(vShader, sizeof(infoLog), NULL, infoLog);
+		std::cout << "Error! Vertex shader failed to compile. " << infoLog << std::endl;
+	}
+
+
+	GLint fShader = glCreateShader(GL_FRAGMENT_SHADER);
+	pe = (const GLchar *)fragmentShader;
+	glShaderSource(fShader, 1, &pe, NULL);
+	glCompileShader(fShader);
+
+
+	glGetShaderiv(fShader, GL_COMPILE_STATUS, &result);
+	if (!result)
+	{
+		glGetShaderInfoLog(fShader, sizeof(infoLog), NULL, infoLog);
+		std::cout << "Error! Fragment shader failed to compile. " << infoLog << std::endl;
+	}
+
+
+	GLint shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vShader);
+	glAttachShader(shaderProgram, fShader);
+	glLinkProgram(shaderProgram);
+
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &result);
+	if (!result) {
+		glGetProgramInfoLog(shaderProgram, sizeof(infoLog), NULL, infoLog);
+		std::cout << "Error! Shader program linker failure. " << infoLog << std::endl;
+	}
+
+	glDeleteShader(vShader);
+	glDeleteShader(fShader);
+
+	glPointSize(10.0);
+
+
+	//-------end Bullet test
+
+
+	char vertex_shader[1024];
+	char vertex_shader_enemy[1024];
+	char fragment_shader[1024];
+	parse_file_into_str("test_vs.glsl", vertex_shader, 1024);
+	parse_file_into_str("vs_enemy.glsl", vertex_shader_enemy, 1024);
+	parse_file_into_str("test_fs.glsl", fragment_shader, 1024);
 
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
 	const GLchar *p = (const GLchar *)vertex_shader;
@@ -275,18 +363,20 @@ int main() {
 
 		glViewport(0, 0, g_gl_width, g_gl_height);
 
+
 		//Enemy
+
 		glActiveTexture(texture_enemy);
 		glBindTexture(GL_TEXTURE_2D, texture_enemy);
 		glUseProgram(shader_programme_enemy);
 		glBindVertexArray(VAOs[1]);
 		//initializing arrays of positions
-		float x_min[16] = {};
-		float x_max[16] = {};
-		float y_min[16] = {};
-		float y_max[16] = {};
+		float x_min[17] = {};
+		float x_max[17] = {};
+		float y_min[17] = {};
+		float y_max[17] = {};
+
 		//clone enemies
-		
 		for (int i = 0; i <= 16; i++)
 		{
 			glm::mat4 trans;
@@ -304,10 +394,22 @@ int main() {
 				y_min[i] = 0.6f;
 				y_max[i] = 0.7f;
 			}
+
 			unsigned int transformLoc = glGetUniformLocation(shader_programme_enemy, "transform");
 			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}
+
+
+		//Bullet test 
+		glUseProgram(shaderProgram);
+		vertexPosLocation2 = glGetUniformLocation(shaderProgram, "sumPos2");
+		glBindVertexArray(VAOs[2]);
+		glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+		//--- end Bullet test
+		
+
 		//SpaceShuttle
 		glActiveTexture(texture_spaceshuttle);
 		glBindTexture(GL_TEXTURE_2D, texture_spaceshuttle);
@@ -317,11 +419,11 @@ int main() {
 		glBindVertexArray(VAOs[0]);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		
+
 		// put the stuff we've been drawing onto the display
 		glfwSwapBuffers(g_window);
 	}
-
+	//glfwSetWindowShouldClose(g_window, GL_TRUE);
 	// close GL context and any other GLFW resources
 	glfwTerminate();
 	return 0;
