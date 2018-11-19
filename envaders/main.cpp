@@ -30,14 +30,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	if (key == GLFW_KEY_LEFT || key == GLFW_KEY_A && action == GLFW_PRESS) {
+	if ((key == GLFW_KEY_LEFT || key == GLFW_KEY_A) && action == GLFW_PRESS) {
 		if (dx > -0.9) {
 			printf("LEFT");
 			dx -= 0.1;
 		}
 	}
 
-	if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D && action == GLFW_PRESS) {
+	if ((key == GLFW_KEY_RIGHT || key == GLFW_KEY_D) && action == GLFW_PRESS) {
 		if (dx < 0.9) {
 			printf("Right");
 			dx += 0.1;
@@ -80,15 +80,43 @@ int main() {
 
 	float enemyVertices[] = {
 		// positions          // colors           // texture coords
-		-0.8f,  0.9f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		-0.8f,  0.8f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-		-0.9f,  0.8f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-		-0.9f,  0.9f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
+		-0.78f,  0.9f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		-0.78f,  0.8f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		-0.88f,  0.8f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+		-0.88f,  0.9f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left
 	};
 
 	unsigned int enemyIndices[] = {
 		0, 1, 3, // first triangle
 		1, 2, 3  // second triangle
+	};
+
+	glm::vec3 enemyPositions[] = {
+		glm::vec3(0.0f,  0.0f, 0.0f),
+		glm::vec3(0.15f, 0.0f, 0.0f),
+		glm::vec3(0.3f,  0.0f, 0.0f),
+		glm::vec3(0.45f, 0.0f, 0.0f),
+		glm::vec3(0.6f,  0.0f, 0.0f),
+		glm::vec3(0.75f, 0.0f, 0.0f),
+		glm::vec3(0.9f,  0.0f, 0.0f),
+		glm::vec3(1.05f, 0.0f, 0.0f),
+		glm::vec3(1.2f,  0.0f, 0.0f),
+		glm::vec3(1.35f, 0.0f, 0.0f),
+		glm::vec3(1.5f,  0.0f, 0.0f),
+		glm::vec3(1.65f, 0.0f, 0.0f),
+
+		glm::vec3(0.0f,  -0.2f, 0.0f),
+		glm::vec3(0.15f, -0.2f, 0.0f),
+		glm::vec3(0.3f,  -0.2f, 0.0f),
+		glm::vec3(0.45f, -0.2f, 0.0f),
+		glm::vec3(0.6f,  -0.2f, 0.0f),
+		glm::vec3(0.75f, -0.2f, 0.0f),
+		glm::vec3(0.9f,  -0.2f, 0.0f),
+		glm::vec3(1.05f, -0.2f, 0.0f),
+		glm::vec3(1.2f,  -0.2f, 0.0f),
+		glm::vec3(1.35f, -0.2f, 0.0f),
+		glm::vec3(1.5f,  -0.2f, 0.0f),
+		glm::vec3(1.65f, -0.2f, 0.0f),
 	};
 
 	float bulletVertices[] = {
@@ -376,24 +404,26 @@ int main() {
 		float y_min[17] = {};
 		float y_max[17] = {};
 
+		
 		//clone enemies
-		for (int i = 0; i <= 16; i++)
+		for (int i = 0; i < 24; i++)
 		{
 			glm::mat4 trans;
-			if (i <= 7) {//PRIMEIRA LINHA
-				trans = glm::translate(trans, glm::vec3((0.1f + ((float)i) / 5), 0.0f, 0.0f));
-				x_min[i] = (-0.9f + (0.1f + ((float)i) / 5));
-				x_max[i] = (-0.8f + (0.1f + ((float)i) / 5));
-				y_min[i] = 0.8f;
-				y_max[i] = 0.9f;
-			}
-			if (i > 7) {//SEGUNDA LINHA
-				trans = glm::translate(trans, glm::vec3((-1.6f + ((float)i) / 5), -0.2f, 0.0f));
-				x_min[i] = (-0.9f + (-1.5f + ((float)i) / 5));
-				x_max[i] = (-0.8f + (-1.5f + ((float)i) / 5));
-				y_min[i] = 0.6f;
-				y_max[i] = 0.7f;
-			}
+			trans = glm::translate(trans, enemyPositions[i]);
+			//if (i <= 7) {//PRIMEIRA LINHA
+			//	trans = glm::translate(trans, glm::vec3((0.1f + ((float)i) / 5), 0.0f, 0.0f));
+			//	x_min[i] = (-0.9f + (0.1f + ((float)i) / 5));
+			//	x_max[i] = (-0.8f + (0.1f + ((float)i) / 5));
+			//	y_min[i] = 0.8f;
+			//	y_max[i] = 0.9f;
+			//}
+			//if (i > 7) {//SEGUNDA LINHA
+			//	trans = glm::translate(trans, glm::vec3((-1.6f + ((float)i) / 5), -0.2f, 0.0f));
+			//	x_min[i] = (-0.9f + (-1.5f + ((float)i) / 5));
+			//	x_max[i] = (-0.8f + (-1.5f + ((float)i) / 5));
+			//	y_min[i] = 0.6f;
+			//	y_max[i] = 0.7f;
+			//}
 
 			unsigned int transformLoc = glGetUniformLocation(shader_programme_enemy, "transform");
 			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
