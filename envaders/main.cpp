@@ -21,7 +21,8 @@ int g_gl_width = 640;
 int g_gl_height = 480;
 int vertexPosLocation;
 int vertexPosLocation2;
-float dx = 0, dy = 0;
+float dx_bullet = 0, dy_bullet = 0;
+float dx_nave = 0, dy_nave = 0;
 GLFWwindow *g_window = NULL;
 
 // if a key is pressed / released via GLFW
@@ -31,16 +32,18 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
 	if ((key == GLFW_KEY_LEFT || key == GLFW_KEY_A) && action == GLFW_PRESS) {
-		if (dx > -0.9) {
+		if (dx_nave > -0.9) {
 			printf("LEFT");
-			dx -= 0.1;
+			dx_nave -= 0.1;
+			dx_bullet -= 0.1;
 		}
 	}
 
 	if ((key == GLFW_KEY_RIGHT || key == GLFW_KEY_D) && action == GLFW_PRESS) {
-		if (dx < 0.9) {
+		if (dx_nave < 0.9) {
 			printf("Right");
-			dx += 0.1;
+			dx_nave += 0.1;
+			dx_bullet+= 0.1;
 		}
 	}
 
@@ -49,9 +52,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		
 	}
 
-	glUniform3f(vertexPosLocation2, dx, dy, 0.0f);
+	glUniform3f(vertexPosLocation2, dx_bullet, dy_bullet, 0.0f);
 
-	glUniform3f(vertexPosLocation, dx, dy, 0.0f);
+	glUniform3f(vertexPosLocation, dx_nave, dy_nave, 0.0f);
 }
 
 int main() {
@@ -410,20 +413,6 @@ int main() {
 		{
 			glm::mat4 trans;
 			trans = glm::translate(trans, enemyPositions[i]);
-			//if (i <= 7) {//PRIMEIRA LINHA
-			//	trans = glm::translate(trans, glm::vec3((0.1f + ((float)i) / 5), 0.0f, 0.0f));
-			//	x_min[i] = (-0.9f + (0.1f + ((float)i) / 5));
-			//	x_max[i] = (-0.8f + (0.1f + ((float)i) / 5));
-			//	y_min[i] = 0.8f;
-			//	y_max[i] = 0.9f;
-			//}
-			//if (i > 7) {//SEGUNDA LINHA
-			//	trans = glm::translate(trans, glm::vec3((-1.6f + ((float)i) / 5), -0.2f, 0.0f));
-			//	x_min[i] = (-0.9f + (-1.5f + ((float)i) / 5));
-			//	x_max[i] = (-0.8f + (-1.5f + ((float)i) / 5));
-			//	y_min[i] = 0.6f;
-			//	y_max[i] = 0.7f;
-			//}
 
 			unsigned int transformLoc = glGetUniformLocation(shader_programme_enemy, "transform");
 			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
@@ -436,7 +425,7 @@ int main() {
 		vertexPosLocation2 = glGetUniformLocation(shaderProgram, "sumPos2");
 		glBindVertexArray(VAOs[2]);
 		glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+		//glBindVertexArray(0);
 		//--- end Bullet test
 		
 
