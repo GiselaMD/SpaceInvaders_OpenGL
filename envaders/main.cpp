@@ -52,9 +52,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		
 	}
 
-	glUniform3f(vertexPosLocation2, dx_bullet, dy_bullet, 0.0f);
+	/*glUniform3f(vertexPosLocation2, dx_bullet, dy_bullet, 0.0f);
 
-	glUniform3f(vertexPosLocation, dx_nave, dy_nave, 0.0f);
+	glUniform3f(vertexPosLocation, dx_nave, dy_nave, 0.0f);*/
 }
 
 int main() {
@@ -419,14 +419,9 @@ int main() {
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}
 
+		
 
-		//Bullet test 
-		glUseProgram(shaderProgram);
-		vertexPosLocation2 = glGetUniformLocation(shaderProgram, "sumPos2");
-		glBindVertexArray(VAOs[2]);
-		glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
-		//glBindVertexArray(0);
-		//--- end Bullet test
+		
 		
 
 		//SpaceShuttle
@@ -435,8 +430,19 @@ int main() {
 		glUseProgram(shader_programme);
 		//get sumPos position
 		vertexPosLocation = glGetUniformLocation(shader_programme, "sumPos");
+
+		glUniform3f(vertexPosLocation, dx_nave, dy_nave, 0.0f);
 		glBindVertexArray(VAOs[0]);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
+		//Bullet test 
+		glUseProgram(shaderProgram);
+		vertexPosLocation2 = glGetUniformLocation(shaderProgram, "sumPos2");
+		glUniform3f(vertexPosLocation2, dx_bullet, dy_bullet, 0.0f);
+		glBindVertexArray(VAOs[2]);
+		glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
+		//glBindVertexArray(0);
+		//--- end Bullet test
 
 
 		// put the stuff we've been drawing onto the display
