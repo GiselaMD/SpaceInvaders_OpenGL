@@ -24,6 +24,13 @@ int vertexPosLocation2;
 float dx_bullet = 0, dy_bullet = 0;
 float dx_nave = 0, dy_nave = 0;
 bool toThrowBullet = false;
+
+//initializing arrays of positions
+float x_min[24] = {};
+float x_max[24] = {};
+float y_min[24] = {};
+float y_max[24] = {};
+
 GLFWwindow *g_window = NULL;
 
 // if a key is pressed / released via GLFW
@@ -401,30 +408,28 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, texture_enemy);
 		glUseProgram(shader_programme_enemy);
 		glBindVertexArray(VAOs[1]);
-		//initializing arrays of positions
-		float x_min[24] = {};
-		float x_max[24] = {};
-		float y_min[24] = {};
-		float y_max[24] = {};
+		
 		
 		//clone enemies
 		for (int i = 0; i < 24; i++)
 		{
-			glm::mat4 trans;
-			trans = glm::translate(trans, enemyPositions[i]);
-			x_min[i] = (-0.88f) + 0.15f; //left position + deslocamento
-			x_max[i] = (-0.78f) + 0.15f; //right position + deslocamento
-			if (i <= 11) {
-				y_min[i] = 0.8f; //down position 
-				y_max[i] = 0.9f; //up position 
+			if (x_min[i] != 99 && x_max[i] != 99 && y_min[i] != 99 && y_max[i] != 99) {
+				glm::mat4 trans;
+				trans = glm::translate(trans, enemyPositions[i]);
+				x_min[i] = (-0.88f) + 0.15f * i; //left position + deslocamento
+				x_max[i] = (-0.78f) + 0.15f * i; //right position + deslocamento
+				if (i <= 11) {
+					y_min[i] = 0.8f; //down position 
+					y_max[i] = 0.9f; //up position 
+				}
+				if (i > 12) {
+					y_min[i] = 0.6f; //down position 
+					y_max[i] = 0.7f; //up position 
+				}
+				unsigned int transformLoc = glGetUniformLocation(shader_programme_enemy, "transform");
+				glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			}
-			if (i > 12) {
-				y_min[i] = 0.6f; //down position 
-				y_max[i] = 0.7f; //up position 
-			}
-			unsigned int transformLoc = glGetUniformLocation(shader_programme_enemy, "transform");
-			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}
 
 		//SpaceShuttle
@@ -447,18 +452,22 @@ int main() {
 			float timeValue = glfwGetTime();
 			if (dy_bullet > 2.0f) {
 				printf("dy_bullet + %f", dy_bullet);
-				dy_bullet = 0.2f;
+				dy_bullet = 0.0f;
 				dx_bullet = dx_nave;
 				toThrowBullet = false;
 				glfwSetTime(0.0);
 			}
 			else {
 				dy_bullet = (timeValue) / 2.0f;
-
+				dx_bullet = dx_nave;
 				//Tentando verificar se bullet acertou enemy
-				for (int i = 0; i < 24; i++) {
-					if ((x_min[i] < dx_bullet < x_max[i]) && (y_min[i] < dy_bullet < y_max[i])) {
-						printf("está dentro!");
+
+				if (dy_bullet >= 0.6f) {
+					for (int i = 0; i < 24; i++) {
+						if ((x_min[i] <= dx_bullet <= x_max[i]) && (y_min[i] <= dy_bullet <= y_max[i])) {
+							printf("está dentro!");
+							x_min[i] = 99;
+						}
 					}
 				}
 			}
