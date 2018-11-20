@@ -23,6 +23,7 @@ int vertexPosLocation;
 int vertexPosLocation2;
 float dx_bullet = 0, dy_bullet = 0;
 float dx_nave = 0, dy_nave = 0;
+bool toThrowBullet = false;
 GLFWwindow *g_window = NULL;
 
 // if a key is pressed / released via GLFW
@@ -49,12 +50,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
 		printf("Space");
-		
+		toThrowBullet = true;
+		printf(toThrowBullet ? "true" : "false");
 	}
-
-	/*glUniform3f(vertexPosLocation2, dx_bullet, dy_bullet, 0.0f);
-
-	glUniform3f(vertexPosLocation, dx_nave, dy_nave, 0.0f);*/
 }
 
 int main() {
@@ -377,7 +375,7 @@ int main() {
 	glFrontFace(GL_CW);			// GL_CCW for counter clock-wise
 
 
-								// Set the required callback functions
+	// Set the required callback functions
 	glfwSetKeyCallback(g_window, key_callback);
 
 
@@ -396,7 +394,6 @@ int main() {
 
 
 		//Enemy
-
 		glActiveTexture(texture_enemy);
 		glBindTexture(GL_TEXTURE_2D, texture_enemy);
 		glUseProgram(shader_programme_enemy);
@@ -406,7 +403,6 @@ int main() {
 		float x_max[17] = {};
 		float y_min[17] = {};
 		float y_max[17] = {};
-
 		
 		//clone enemies
 		for (int i = 0; i < 24; i++)
@@ -419,13 +415,8 @@ int main() {
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}
 
-		
-
-		
-		
-
 		//SpaceShuttle
-		glActiveTexture(texture_spaceshuttle);
+  		glActiveTexture(texture_spaceshuttle);
 		glBindTexture(GL_TEXTURE_2D, texture_spaceshuttle);
 		glUseProgram(shader_programme);
 		//get sumPos position
@@ -438,7 +429,29 @@ int main() {
 		//Bullet test 
 		glUseProgram(shaderProgram);
 		vertexPosLocation2 = glGetUniformLocation(shaderProgram, "sumPos2");
+		
+
+		if (toThrowBullet) {
+			float timeValue = glfwGetTime();
+			if (dy_bullet > 2.0f) {
+				printf("dy_bullet + %f", dy_bullet);
+				dy_bullet = 0.2f;
+				toThrowBullet = false;
+				glfwSetTime(0.0);
+			}
+			else {
+				dy_bullet = (timeValue) / 5.0f;
+			}
+
+			printf(toThrowBullet ? "true" : "false");
+		}
+
+
+		//printf(toThrowBullet ? "true" : "false");
+
 		glUniform3f(vertexPosLocation2, dx_bullet, dy_bullet, 0.0f);
+		
+
 		glBindVertexArray(VAOs[2]);
 		glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
 		//glBindVertexArray(0);
