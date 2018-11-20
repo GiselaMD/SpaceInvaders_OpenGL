@@ -36,7 +36,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		if (dx_nave > -0.9) {
 			printf("LEFT");
 			dx_nave -= 0.1;
-			dx_bullet -= 0.1;
+			if (!toThrowBullet) {
+				dx_bullet -= 0.1;
+			}
 		}
 	}
 
@@ -44,7 +46,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		if (dx_nave < 0.9) {
 			printf("Right");
 			dx_nave += 0.1;
-			dx_bullet+= 0.1;
+			if (!toThrowBullet) {
+				dx_bullet += 0.1;
+			}
 		}
 	}
 
@@ -436,6 +440,7 @@ int main() {
 			if (dy_bullet > 2.0f) {
 				printf("dy_bullet + %f", dy_bullet);
 				dy_bullet = 0.2f;
+				dx_bullet = dx_nave;
 				toThrowBullet = false;
 				glfwSetTime(0.0);
 			}
@@ -445,9 +450,6 @@ int main() {
 
 			printf(toThrowBullet ? "true" : "false");
 		}
-
-
-		//printf(toThrowBullet ? "true" : "false");
 
 		glUniform3f(vertexPosLocation2, dx_bullet, dy_bullet, 0.0f);
 		
