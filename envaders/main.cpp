@@ -416,8 +416,8 @@ int main() {
 			if (x_min[i] != 99 && x_max[i] != 99 && y_min[i] != 99 && y_max[i] != 99) {
 				glm::mat4 trans;
 				trans = glm::translate(trans, enemyPositions[i]);
-				x_min[i] = (-0.88f) + 0.15f * i; //left position + deslocamento
-				x_max[i] = (-0.78f) + 0.15f * i; //right position + deslocamento
+				x_min[i] = (-0.88f) + (0.15f * i); //left position + deslocamento
+				x_max[i] = (-0.78f) + (0.15f * i); //right position + deslocamento
 				if (i <= 11) {
 					y_min[i] = 0.8f; //down position 
 					y_max[i] = 0.9f; //up position 
@@ -449,6 +449,8 @@ int main() {
 		
 
 		if (toThrowBullet) {
+			int countTiro;
+			
 			float timeValue = glfwGetTime();
 			if (dy_bullet > 2.0f) {
 				printf("dy_bullet + %f", dy_bullet);
@@ -458,17 +460,26 @@ int main() {
 				glfwSetTime(0.0);
 			}
 			else {
-				dy_bullet = (timeValue) / 2.0f;
-				dx_bullet = dx_nave;
+				dy_bullet = (timeValue) / 1.0f;
+				countTiro = 0;
 				//Tentando verificar se bullet acertou enemy
-
-				if (dy_bullet >= 0.6f) {
 					for (int i = 0; i < 24; i++) {
-						if ((x_min[i] <= dx_bullet <= x_max[i]) && (y_min[i] <= dy_bullet <= y_max[i])) {
-							printf("está dentro!");
-							x_min[i] = 99;
+						
+						if ((dx_bullet >= x_min[i] && dx_bullet <= x_max[i]) && (dy_bullet >= y_min[i] && dy_bullet <= y_max[i])) {
+							
+							if ((y_min[i + 12] < y_min[i]) && countTiro == 0) {
+								printf("está embaixo!");
+								x_min[i + 12] = 99;
+								y_min[i + 12] = 20; //mudo a altura pra depois conseguir apagar o enemy de cima
+								//OBS: passar o enemy de baixo pra cima, para então conseguir pegar o mais embaixo
+								countTiro = 1;
+							}
+							if ((y_min[i + 12] > y_min[i]) && countTiro == 0) {
+								printf("está em cima!");
+								x_min[i] = 99;
+								countTiro = 1;
+							}
 						}
-					}
 				}
 			}
 		}
