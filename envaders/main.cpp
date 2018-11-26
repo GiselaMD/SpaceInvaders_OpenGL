@@ -30,7 +30,7 @@ float dx_nave = 0, dy_nave = 0;
 bool enemy_exist[24];
 bool toThrowBullet = false;
 GLuint VBOs[4], VAOs[4], EBOs[3];
-GLuint countTiro;
+float timeValue = 0.0f;
 void loadEnemies(void);
 //
 ///// Holds all state information relevant to a character as loaded using FreeType
@@ -93,23 +93,25 @@ void loadEnemies() {
 		enemy_exist[i] = true;
 	}
 }
-void verificaTiro(int countTiro) {
-	countTiro = 1;
+void verificaTiro() {
 	//Tentando verificar se bullet acertou enemy
 	for (int i = 0; i < 24; i++) {
-		printf("%d", countTiro);
 		//Verifica se está dentro do intervalo de inimigos
-		if ((dx_bullet >= x_min[i] && dx_bullet <= x_max[i]) && (dy_bullet >= y_min[i] && dy_bullet <= y_max[i])) {
+		if ((dx_bullet >= x_min[i] && dx_bullet <= x_max[i]) && (dy_bullet >= y_min[i] && dy_bullet <= y_max[i]) && enemy_exist[i]) {
 			if ((y_min[i + 12] > y_min[i])) {
 				printf("está em cima!");
 				enemy_exist[i] = false;
-				countTiro = 0;
+				toThrowBullet = false;
+				dy_bullet = 0.0f;
+				timeValue = 0.0f;
 			}
-			if ((y_min[i + 12] < y_min[i])) {
+			else if ((y_min[i + 12] < y_min[i])) {
 				printf("está embaixo!");
 				enemy_exist[i+12] = false;
 				y_min[i + 12] = 20; //mudo a altura pra depois conseguir apagar o enemy de cima
-				countTiro = 0;		//OBS: passar o enemy de baixo pra cima, para então conseguir pegar o mais embaixo
+				toThrowBullet = false;	//OBS: passar o enemy de baixo pra cima, para então conseguir pegar o mais embaixo
+				dy_bullet = 0.0f;
+				timeValue = 0.0f;
 			}
 		}
 	}
@@ -514,7 +516,6 @@ int main() {
 	// Set the required callback functions
 	glfwSetKeyCallback(g_window, key_callback);
 
-
 	while (!glfwWindowShouldClose(g_window)) {
 
 		// update other events like input handling
@@ -577,28 +578,28 @@ int main() {
 		vertexPosLocation2 = glGetUniformLocation(shaderProgram, "sumPos2");
 		glUniform3f(vertexPosLocation2, dx_bullet, dy_bullet, 0.0f);
 		glBindVertexArray(VAOs[2]);
-		glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
 
 		if (toThrowBullet) {
-			
-			float timeValue = glfwGetTime();
+			glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
+
+			timeValue += 0.001f;//glfwGetTime();
 			if (dy_bullet > 2.0f) {
 				//printf("dy_bullet + %f", dy_bullet);
 				dy_bullet = 0.0f;
 				dx_bullet = dx_nave;
 				glfwSetTime(0.0);
 				toThrowBullet = false;
+				timeValue = 0.0f;
 			}
 			else {
 				dy_bullet = (timeValue);
-				verificaTiro(countTiro);
+				verificaTiro();
 			}
 		}
 
 		
 		//glBindVertexArray(0);
 		//--- end Bullet test
-
 
 		// put the stuff we've been drawing onto the display
 		glfwSwapBuffers(g_window);
