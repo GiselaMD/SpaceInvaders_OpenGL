@@ -27,8 +27,11 @@ int vertexPosLocation;
 int vertexPosLocation2;
 float dx_bullet = 0, dy_bullet = 0;
 float dx_nave = 0, dy_nave = 0;
+bool enemy_exist[24];
 bool toThrowBullet = false;
 GLuint VBOs[4], VAOs[4], EBOs[3];
+GLuint countTiro;
+void loadEnemies(void);
 //
 ///// Holds all state information relevant to a character as loaded using FreeType
 //struct Character {
@@ -79,6 +82,36 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
 		printf("Space");
 		toThrowBullet = true;
+	}
+
+	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+		loadEnemies();
+	}
+}
+void loadEnemies() {
+	for (int i = 0; i < 24; i++) {
+		enemy_exist[i] = true;
+	}
+}
+void verificaTiro(int countTiro) {
+	countTiro = 1;
+	//Tentando verificar se bullet acertou enemy
+	for (int i = 0; i < 24; i++) {
+		printf("%d", countTiro);
+		//Verifica se está dentro do intervalo de inimigos
+		if ((dx_bullet >= x_min[i] && dx_bullet <= x_max[i]) && (dy_bullet >= y_min[i] && dy_bullet <= y_max[i])) {
+			if ((y_min[i + 12] > y_min[i])) {
+				printf("está em cima!");
+				enemy_exist[i] = false;
+				countTiro = 0;
+			}
+			if ((y_min[i + 12] < y_min[i])) {
+				printf("está embaixo!");
+				enemy_exist[i+12] = false;
+				y_min[i + 12] = 20; //mudo a altura pra depois conseguir apagar o enemy de cima
+				countTiro = 0;		//OBS: passar o enemy de baixo pra cima, para então conseguir pegar o mais embaixo
+			}
+		}
 	}
 }
 
@@ -417,6 +450,7 @@ int main() {
 			shader_programme_enemy);
 		return 0;
 	}
+	loadEnemies();
 
 	// load and create a texture SHUTTERSPACE
 	// -------------------------
@@ -507,9 +541,8 @@ int main() {
 		
 		
 		//clone enemies
-		for (int i = 0; i < 24; i++)
-		{
-			if (x_min[i] != 99 && x_max[i] != 99 && y_min[i] != 99 && y_max[i] != 99) {
+		for (int i = 0; i < 24; i++){
+			if (enemy_exist[i]) {
 				glm::mat4 trans;
 				trans = glm::translate(trans, enemyPositions[i]);
 				x_min[i] = (-0.88f) + (0.15f * i); //left position + deslocamento
@@ -542,49 +575,27 @@ int main() {
 		//Bullet test 
 		glUseProgram(shaderProgram);
 		vertexPosLocation2 = glGetUniformLocation(shaderProgram, "sumPos2");
-		
+		glUniform3f(vertexPosLocation2, dx_bullet, dy_bullet, 0.0f);
+		glBindVertexArray(VAOs[2]);
+		glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
 
 		if (toThrowBullet) {
-			int countTiro;
 			
 			float timeValue = glfwGetTime();
 			if (dy_bullet > 2.0f) {
-				printf("dy_bullet + %f", dy_bullet);
+				//printf("dy_bullet + %f", dy_bullet);
 				dy_bullet = 0.0f;
 				dx_bullet = dx_nave;
-				toThrowBullet = false;
 				glfwSetTime(0.0);
+				toThrowBullet = false;
 			}
 			else {
-				dy_bullet = (timeValue) / 1.0f;
-				countTiro = 0;
-				//Tentando verificar se bullet acertou enemy
-					for (int i = 0; i < 24; i++) {
-						
-						if ((dx_bullet >= x_min[i] && dx_bullet <= x_max[i]) && (dy_bullet >= y_min[i] && dy_bullet <= y_max[i])) {
-							
-							if ((y_min[i + 12] < y_min[i]) && countTiro == 0) {
-								printf("está embaixo!");
-								x_min[i + 12] = 99;
-								y_min[i + 12] = 20; //mudo a altura pra depois conseguir apagar o enemy de cima
-								//OBS: passar o enemy de baixo pra cima, para então conseguir pegar o mais embaixo
-								countTiro = 1;
-							}
-							if ((y_min[i + 12] > y_min[i]) && countTiro == 0) {
-								printf("está em cima!");
-								x_min[i] = 99;
-								countTiro = 1;
-							}
-						}
-				}
+				dy_bullet = (timeValue);
+				verificaTiro(countTiro);
 			}
 		}
 
-		glUniform3f(vertexPosLocation2, dx_bullet, dy_bullet, 0.0f);
 		
-
-		glBindVertexArray(VAOs[2]);
-		glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
 		//glBindVertexArray(0);
 		//--- end Bullet test
 
