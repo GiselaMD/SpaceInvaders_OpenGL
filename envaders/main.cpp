@@ -28,10 +28,12 @@ int vertexPosLocation2;
 float dx_bullet = 0, dy_bullet = 0;
 float dx_nave = 0, dy_nave = 0;
 bool enemy_exist[24];
+int countEnemies = 24;
+bool nave_exist;
 bool toThrowBullet = false;
 GLuint VBOs[4], VAOs[4], EBOs[3];
 float timeValue = 0.0f;
-void loadEnemies(void);
+void loadGame(void);
 //
 ///// Holds all state information relevant to a character as loaded using FreeType
 //struct Character {
@@ -84,14 +86,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		toThrowBullet = true;
 	}
 
-	if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-		loadEnemies();
+	if (key == GLFW_KEY_ENTER && action == GLFW_PRESS) {
+		loadGame();
 	}
 }
-void loadEnemies() {
+void loadGame() {
 	for (int i = 0; i < 24; i++) {
 		enemy_exist[i] = true;
 	}
+	countEnemies = 24;
+	nave_exist = true;
 }
 void verificaTiro() {
 	//Tentando verificar se bullet acertou enemy
@@ -104,6 +108,7 @@ void verificaTiro() {
 				toThrowBullet = false;
 				dy_bullet = 0.0f;
 				timeValue = 0.0f;
+				countEnemies -= 1;
 			}
 			else if ((y_min[i + 12] < y_min[i])) {
 				printf("está embaixo!");
@@ -112,6 +117,7 @@ void verificaTiro() {
 				toThrowBullet = false;	//OBS: passar o enemy de baixo pra cima, para então conseguir pegar o mais embaixo
 				dy_bullet = 0.0f;
 				timeValue = 0.0f;
+				countEnemies -= 1;
 			}
 		}
 	}
@@ -452,7 +458,7 @@ int main() {
 			shader_programme_enemy);
 		return 0;
 	}
-	loadEnemies();
+	
 
 	// load and create a texture SHUTTERSPACE
 	// -------------------------
@@ -512,7 +518,7 @@ int main() {
 	glCullFace(GL_BACK);		// cull back face
 	glFrontFace(GL_CW);			// GL_CCW for counter clock-wise
 
-
+	loadGame();
 	// Set the required callback functions
 	glfwSetKeyCallback(g_window, key_callback);
 
@@ -571,13 +577,21 @@ int main() {
 
 		glUniform3f(vertexPosLocation, dx_nave, dy_nave, 0.0f);
 		glBindVertexArray(VAOs[0]);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		if (nave_exist) {
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
 		
 		//Bullet test 
 		glUseProgram(shaderProgram);
 		vertexPosLocation2 = glGetUniformLocation(shaderProgram, "sumPos2");
 		glUniform3f(vertexPosLocation2, dx_bullet, dy_bullet, 0.0f);
 		glBindVertexArray(VAOs[2]);
+
+		printf(" E:  %d", countEnemies);
+		if (countEnemies == 0) {
+			nave_exist = false;
+			//apagar tudo
+		}
 
 		if (toThrowBullet) {
 			glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
