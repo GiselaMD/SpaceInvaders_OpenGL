@@ -34,18 +34,6 @@ bool toThrowBullet = false;
 GLuint VBOs[4], VAOs[4], EBOs[3];
 float timeValue = 0.0f;
 void loadGame(void);
-//
-///// Holds all state information relevant to a character as loaded using FreeType
-//struct Character {
-//	GLuint TextureID;   // ID handle of the glyph texture
-//	glm::ivec2 Size;    // Size of glyph
-//	glm::ivec2 Bearing;  // Offset from baseline to left/top of glyph
-//	GLuint Advance;    // Horizontal offset to advance to next glyph
-//};
-//
-//std::map<GLchar, Character> Characters;
-//
-//void RenderText(Shader &shader, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
 
 //initializing arrays of positions
 float x_min[24] = {};
@@ -129,74 +117,6 @@ int main() {
 	start_gl("Space Invaders - Gisela e Karolina");
 	// tell GL to only draw onto a pixel if the shape is closer to the viewer
 	//glEnable( GL_DEPTH_TEST ); // enable depth-testing
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	////glDepthFunc( GL_LESS );		 // depth-testing interprets a smaller value as "closer"
-	//// Compile and setup the shader
-	//Shader shader("vs_freetype", "fs_freetype");
-	//glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(g_gl_width), 0.0f, static_cast<GLfloat>(g_gl_height));
-	//shader.use();
-	//glUniformMatrix4fv(glGetUniformLocation(glCreateProgram(), "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
-	//// FreeType
-	//FT_Library ft;
-	//// All functions return a value different than 0 whenever an error occurred
-	//if (FT_Init_FreeType(&ft))
-	//	std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-
-	//// Load font as face
-	//FT_Face face;
-	//if (FT_New_Face(ft, "fonts/arial.ttf", 0, &face))
-	//	std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-
-	//// Set size to load glyphs as
-	//FT_Set_Pixel_Sizes(face, 0, 48);
-
-	//// Disable byte-alignment restriction
-	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	//// Load first 128 characters of ASCII set
-	//for (GLubyte c = 0; c < 128; c++)
-	//{
-	//	// Load character glyph 
-	//	if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-	//	{
-	//		std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
-	//		continue;
-	//	}
-	//	// Generate texture
-	//	GLuint texture;
-	//	glGenTextures(1, &texture);
-	//	glBindTexture(GL_TEXTURE_2D, texture);
-	//	glTexImage2D(
-	//		GL_TEXTURE_2D,
-	//		0,
-	//		GL_RED,
-	//		face->glyph->bitmap.width,
-	//		face->glyph->bitmap.rows,
-	//		0,
-	//		GL_RED,
-	//		GL_UNSIGNED_BYTE,
-	//		face->glyph->bitmap.buffer
-	//	);
-	//	// Set texture options
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//	// Now store character for later use
-	//	Character character = {
-	//		texture,
-	//		glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-	//		glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-	//		face->glyph->advance.x
-	//	};
-	//	Characters.insert(std::pair<GLchar, Character>(c, character));
-	//}
-	//glBindTexture(GL_TEXTURE_2D, 0);
-	//// Destroy FreeType once we're finished
-	//FT_Done_Face(face);
-	//FT_Done_FreeType(ft);
 
 	// set up vertex data (and buffer(s)) and configure vertex attributes
 	// ------------------------------------------------------------------
@@ -262,7 +182,6 @@ int main() {
 		0
 	};
 
-	//unsigned int VBOs[4], VAOs[4], EBOs[3];
 	glGenVertexArrays(4, VAOs);
 	glGenBuffers(4, VBOs);
 	glGenBuffers(3, EBOs);
@@ -305,8 +224,6 @@ int main() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	//---------Bullet test
-
 	//Bullet
 	// ---------
 	glBindVertexArray(VAOs[2]);
@@ -319,16 +236,7 @@ int main() {
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	glEnableVertexAttribArray(0);
-
-	////Free Type
-	//glBindVertexArray(VAOs[3]);
-	//glBindBuffer(GL_ARRAY_BUFFER, VBOs[3]);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindVertexArray(0);
-
+	
 	char vertexShader[1024];
 	char fragmentShader[1024];
 	parse_file_into_str("vs.glsl", vertexShader, 1024);
@@ -343,12 +251,10 @@ int main() {
 	GLint result;
 	GLchar infoLog[512];
 	glGetShaderiv(vShader, GL_COMPILE_STATUS, &result);
-	if (!result)
-	{
+	if (!result) {
 		glGetShaderInfoLog(vShader, sizeof(infoLog), NULL, infoLog);
 		std::cout << "Error! Vertex shader failed to compile. " << infoLog << std::endl;
 	}
-
 
 	GLint fShader = glCreateShader(GL_FRAGMENT_SHADER);
 	pe = (const GLchar *)fragmentShader;
@@ -357,8 +263,7 @@ int main() {
 
 
 	glGetShaderiv(fShader, GL_COMPILE_STATUS, &result);
-	if (!result)
-	{
+	if (!result) {
 		glGetShaderInfoLog(fShader, sizeof(infoLog), NULL, infoLog);
 		std::cout << "Error! Fragment shader failed to compile. " << infoLog << std::endl;
 	}
@@ -379,10 +284,6 @@ int main() {
 	glDeleteShader(fShader);
 
 	glPointSize(10.0);
-
-
-	//-------end Bullet test
-
 
 	char vertex_shader[1024];
 	char vertex_shader_enemy[1024];
@@ -458,7 +359,6 @@ int main() {
 			shader_programme_enemy);
 		return 0;
 	}
-	
 
 	// load and create a texture SHUTTERSPACE
 	// -------------------------
@@ -477,13 +377,11 @@ int main() {
 	stbi_set_flip_vertically_on_load(true);
 	// load image, create texture and generate mipmaps
 	unsigned char *data = stbi_load("spaceshuttle.png", &width, &height, &nrChannels, 0);
-	if (data)
-	{
+	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
-	else
-	{
+	else {
 		std::cout << "Failed to load texture" << std::endl;
 	}
 	stbi_image_free(data);
@@ -503,20 +401,18 @@ int main() {
 	//stbi_set_flip_vertically_on_load(true);
 	// load image, create texture and generate mipmaps
 	data = stbi_load("enemy.png", &width, &height, &nrChannels, 0);
-	if (data)
-	{
+	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
-	else
-	{
+	else {
 		std::cout << "Failed to load texture" << std::endl;
 	}
 	stbi_image_free(data);
 
 	glEnable(GL_CULL_FACE); // cull face
-	glCullFace(GL_BACK);		// cull back face
-	glFrontFace(GL_CW);			// GL_CCW for counter clock-wise
+	glCullFace(GL_BACK);	// cull back face
+	glFrontFace(GL_CW);		// GL_CCW for counter clock-wise
 
 	loadGame();
 	// Set the required callback functions
@@ -534,11 +430,6 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glViewport(0, 0, g_gl_width, g_gl_height);
-
-
-		//RenderText(shader, "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-		//RenderText(shader, "(C) LearnOpenGL.com", 540.0f, 570.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));
-
 
 		//Enemy
 		glActiveTexture(texture_enemy);
@@ -581,13 +472,12 @@ int main() {
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		}
 		
-		//Bullet test 
+		//Bullet
 		glUseProgram(shaderProgram);
 		vertexPosLocation2 = glGetUniformLocation(shaderProgram, "sumPos2");
 		glUniform3f(vertexPosLocation2, dx_bullet, dy_bullet, 0.0f);
 		glBindVertexArray(VAOs[2]);
 
-		printf(" E:  %d", countEnemies);
 		if (countEnemies == 0) {
 			nave_exist = false;
 			//apagar tudo
@@ -595,10 +485,8 @@ int main() {
 
 		if (toThrowBullet) {
 			glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
-
-			timeValue += 0.001f;//glfwGetTime();
+			timeValue += 0.001f;
 			if (dy_bullet > 2.0f) {
-				//printf("dy_bullet + %f", dy_bullet);
 				dy_bullet = 0.0f;
 				dx_bullet = dx_nave;
 				glfwSetTime(0.0);
@@ -606,64 +494,17 @@ int main() {
 				timeValue = 0.0f;
 			}
 			else {
-				dy_bullet = (timeValue);
+				dy_bullet = timeValue;
 				verificaTiro();
 			}
 		}
 
-		
-		//glBindVertexArray(0);
-		//--- end Bullet test
-
 		// put the stuff we've been drawing onto the display
 		glfwSwapBuffers(g_window);
 	}
+
 	//glfwSetWindowShouldClose(g_window, GL_TRUE);
 	// close GL context and any other GLFW resources
 	glfwTerminate();
 	return 0;
 }
-//
-//void RenderText(Shader &s, std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
-//{
-//	// Activate corresponding render state	
-//	s.use();
-//	glUniform3f(glGetUniformLocation(glCreateProgram(), "textColor"), color.x, color.y, color.z);
-//	glActiveTexture(GL_TEXTURE0);
-//	glBindVertexArray(VAOs[3]);
-//
-//	// Iterate through all characters
-//	std::string::const_iterator c;
-//	for (c = text.begin(); c != text.end(); c++)
-//	{
-//		Character ch = Characters[*c];
-//
-//		GLfloat xpos = x + ch.Bearing.x * scale;
-//		GLfloat ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
-//
-//		GLfloat w = ch.Size.x * scale;
-//		GLfloat h = ch.Size.y * scale;
-//		// Update VBO for each character
-//		GLfloat vertices[6][4] = {
-//			{ xpos,     ypos + h,   0.0, 0.0 },
-//			{ xpos,     ypos,       0.0, 1.0 },
-//			{ xpos + w, ypos,       1.0, 1.0 },
-//
-//			{ xpos,     ypos + h,   0.0, 0.0 },
-//			{ xpos + w, ypos,       1.0, 1.0 },
-//			{ xpos + w, ypos + h,   1.0, 0.0 }
-//		};
-//		// Render glyph texture over quad
-//		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-//		// Update content of VBO memory
-//		glBindBuffer(GL_ARRAY_BUFFER, VBOs[3]);
-//		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-//		glBindBuffer(GL_ARRAY_BUFFER, 0);
-//		// Render quad
-//		glDrawArrays(GL_TRIANGLES, 0, 6);
-//		// Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-//		x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
-//	}
-//	glBindVertexArray(0);
-//	glBindTexture(GL_TEXTURE_2D, 0);
-//}
