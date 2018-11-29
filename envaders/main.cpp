@@ -16,9 +16,9 @@
 #include "stb_image.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/type_ptr.hpp>/*
 #include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw_gl3.h"
+#include "imgui/imgui_impl_glfw_gl3.h"*/
 
 int g_gl_width = 640;
 int g_gl_height = 480;
@@ -413,23 +413,19 @@ int main() {
 	glCullFace(GL_BACK);	// cull back face
 	glFrontFace(GL_CW);		// GL_CCW for counter clock-wise
 
-	loadGame();
 	// Set the required callback functions
 	glfwSetKeyCallback(g_window, key_callback);
 
-	ImGui::CreateContext();
-	ImGui_ImplGlfwGL3_Init(g_window, true);
-	ImGui::StyleColorsDark();
+	//ImGui::CreateContext();
+	//ImGui_ImplGlfwGL3_Init(g_window, true);
+	//ImGui::StyleColorsDark();
 
 	while (!glfwWindowShouldClose(g_window)) {
 
 		// update other events like input handling
 		glfwPollEvents();
-
-		if (GLFW_PRESS == glfwGetKey(g_window, GLFW_KEY_ESCAPE)) {
-			glfwSetWindowShouldClose(g_window, 1);
-		}
-		ImGui_ImplGlfwGL3_NewFrame();
+		
+		//ImGui_ImplGlfwGL3_NewFrame();
 		// wipe the drawing surface clear
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -503,14 +499,14 @@ int main() {
 				verificaTiro();
 			}
 		}
-		ImGui::Render();
-		ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+		/*ImGui::Render();
+		ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());*/
 		// put the stuff we've been drawing onto the display
 		glfwSwapBuffers(g_window);
 	}
 
-	ImGui_ImplGlfwGL3_Shutdown();
-	ImGui::DestroyContext();
+	/*ImGui_ImplGlfwGL3_Shutdown();
+	ImGui::DestroyContext();*/
 	//glfwSetWindowShouldClose(g_window, GL_TRUE);
 	// close GL context and any other GLFW resources
 	glfwTerminate();
